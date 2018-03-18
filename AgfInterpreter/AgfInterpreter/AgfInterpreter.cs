@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace AgfLang
 {
     public enum Tokens { SEMI, EQ, PEQ, SEQ, MEQ, DEQ, OR, AND, GT, GEQ, LT, LEQ,
-                         ISEQ, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, ID, INT, EOF };
+                         ISEQ, NEQ, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, ID, INT, EOF };
 
     class Token
     {
@@ -171,6 +171,13 @@ namespace AgfLang
         string integer()
         {
             string ret = "";
+
+            if (current_char == '-') //handle negatives
+            {
+                ret += '-';
+                advance();
+            }
+
             while (current_char != '\0' && Char.IsDigit(current_char))
             {
                 ret += current_char;
@@ -191,7 +198,7 @@ namespace AgfLang
                 }
 
                 //ID and INT tokens
-                if (Char.IsDigit(current_char))
+                if (Char.IsDigit(current_char) || (current_char == '-' && Char.IsDigit(peek())))
                     return new Token(Tokens.INT, integer());
                 if (Char.IsLetterOrDigit(current_char))
                     return id();
@@ -280,6 +287,12 @@ namespace AgfLang
                     advance();
                     return new Token(Tokens.ISEQ, "==");
                 }
+                if (current_char == '!' && peek() == '=')
+                {
+                    advance();
+                    advance();
+                    return new Token(Tokens.NEQ, "!=");
+                }
                 if (current_char == '>' && peek() == '=')
                 {
                     advance();
@@ -317,7 +330,7 @@ namespace AgfLang
     //====Parser Definition====
     //=========================
     /*
-     * statement_list  =  statement | statement SEMI statment_list
+     * statement_list  =  statement | statement SEMI statment_list | satement SEMI EOF
      * statement       =  assign | orexpr
      * assign          =  ID (EQ|PEQ|SEQ|MEQ|DEQ) orexpr
      * orexpr          =  andexpr ((OR) andexpr)*
@@ -369,7 +382,10 @@ namespace AgfLang
             while (current_token.type == Tokens.SEMI)
             {
                 eat(Tokens.SEMI);
-                stmt_list.children.Add(statement());
+                if (current_token.type != Tokens.EOF)
+                    stmt_list.children.Add(statement());
+                else
+                    break;
             }
             return stmt_list;
         }
@@ -379,7 +395,7 @@ namespace AgfLang
         {
             Token tkn = current_token;
 
-            Tokens[] assignment_operators = new Tokens[] { Tokens.EQ, Tokens.PEQ, Tokens.MEQ, Tokens.MEQ, Tokens.DEQ };
+            Tokens[] assignment_operators = new Tokens[] { Tokens.EQ, Tokens.SEQ, Tokens.PEQ, Tokens.MEQ, Tokens.DEQ };
 
             //taking care of assignment here
             //assign : ID (EQ|PEQ|SEQ|MEQ|DEQ) orexpr
@@ -417,7 +433,7 @@ namespace AgfLang
             while(current_token.type == Tokens.AND)
             {
                 Token t = current_token;
-                eat(Tokens.OR);
+                eat(Tokens.AND);
                 node = new BinOp(node, t, compexpr());
             }
             return node;
@@ -427,7 +443,7 @@ namespace AgfLang
         private AST compexpr()
         {
             AST left = sumexpr();
-            Tokens[] comparison_operators = new Tokens[] { Tokens.ISEQ, Tokens.GT, Tokens.GEQ, Tokens.LT, Tokens.LEQ };
+            Tokens[] comparison_operators = new Tokens[] { Tokens.ISEQ, Tokens.GT, Tokens.GEQ, Tokens.LT, Tokens.LEQ, Tokens.NEQ };
             if (Array.IndexOf(comparison_operators, current_token.type) != -1)
             {
                 Token t = current_token;
@@ -570,6 +586,9 @@ namespace AgfLang
                     break;
                 case Tokens.ISEQ:
                     result = bool2int(left == right);
+                    break;
+                case Tokens.NEQ:
+                    result = bool2int(left != right);
                     break;
                 case Tokens.AND:
                     result = bool2int(left != 0 && right != 0);

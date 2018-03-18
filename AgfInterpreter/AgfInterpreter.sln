@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgfInterpreter", "AgfInterpreter\AgfInterpreter.csproj", "{B08D8573-6362-49E6-B78E-0FE99460B157}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{CF24DF84-9880-46F5-9664-E4F6F96EEB05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_REPL", "Tester\Test_REPL.csproj", "{CF24DF84-9880-46F5-9664-E4F6F96EEB05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgfLangTest", "AgfLangTest\AgfLangTest.csproj", "{DD76CCEB-19DA-418B-BA37-37845FE5C12D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CF24DF84-9880-46F5-9664-E4F6F96EEB05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF24DF84-9880-46F5-9664-E4F6F96EEB05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF24DF84-9880-46F5-9664-E4F6F96EEB05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD76CCEB-19DA-418B-BA37-37845FE5C12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD76CCEB-19DA-418B-BA37-37845FE5C12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD76CCEB-19DA-418B-BA37-37845FE5C12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD76CCEB-19DA-418B-BA37-37845FE5C12D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
