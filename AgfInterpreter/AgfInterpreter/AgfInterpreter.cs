@@ -26,6 +26,7 @@ namespace AgfLang
     {
         string visit(AST node);
         string visit(BinOp node);
+        string visit(UnOp node);
         string visit(Assign node);
         string visit(Var node);
         string visit(Int node);
@@ -51,6 +52,20 @@ namespace AgfLang
             left  = left_;
             token = op_;
             right = right_;
+        }
+        public override string accept(NodeVisitor visitor)
+        {
+            return visitor.visit(this);
+        }
+    }
+
+    class UnOp : AST
+    {
+        public AST value;
+        public UnOp(Token op_, AST value_)
+        {
+            token = op_;
+            value = value_;
         }
         public override string accept(NodeVisitor visitor)
         {
@@ -172,12 +187,6 @@ namespace AgfLang
         {
             string ret = "";
 
-            if (current_char == '-') //handle negatives
-            {
-                ret += '-';
-                advance();
-            }
-
             while (current_char != '\0' && Char.IsDigit(current_char))
             {
                 ret += current_char;
@@ -198,7 +207,7 @@ namespace AgfLang
                 }
 
                 //ID and INT tokens
-                if (Char.IsDigit(current_char) || (current_char == '-' && Char.IsDigit(peek())))
+                if (Char.IsDigit(current_char))
                     return new Token(Tokens.INT, integer());
                 if (Char.IsLetterOrDigit(current_char))
                     return id();
@@ -338,7 +347,7 @@ namespace AgfLang
      * compexpr        =  sumexpr (ISEQ|GT|GEQ|LT|LEQ) sumexpr | sumexpr
      * sumexpr         =  mulexpr ((PLUS|MINUS) mulexpr)*
      * mulexpr         =  factor ((MUL|DIV) factor)*
-     * factor          =  LPAREN orexpr RPAREN | ID | INT
+     * factor          =  LPAREN orexpr RPAREN | ID | INT | NEG factor
      */
 
     class Parser
@@ -484,7 +493,7 @@ namespace AgfLang
             return node;
         }
 
-        //factor : INT | ID | LPAREN orexpr RPAREN
+        //factor : INT | ID | LPAREN orexpr RPAREN | NEG factor
         private AST factor()
         {
             Token tkn = current_token;
@@ -504,6 +513,12 @@ namespace AgfLang
                 AST node = orexpr();
                 eat(Tokens.RPAREN);
                 return node;
+            }
+            if (current_token.type == Tokens.MINUS)
+            {
+                eat(Tokens.MINUS);
+                AST node = factor();
+                return new UnOp(tkn, node);
             }
             error();
             return new AST();
@@ -598,6 +613,18 @@ namespace AgfLang
                     break;
             }
             return Convert.ToString(result);
+        }
+
+        public string visit(UnOp node)
+        {
+            int ret = Convert.ToInt32(node.value.accept(this));
+            switch (node.token.type)
+            {
+                case Tokens.MINUS:
+                    ret = -ret;
+                    break;
+            }
+            return Convert.ToString(ret);
         }
 
         private int getvar(string varname)

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgfInterpreter", "AgfInterp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_REPL", "Tester\Test_REPL.csproj", "{CF24DF84-9880-46F5-9664-E4F6F96EEB05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgfLangTest", "AgfLangTest\AgfLangTest.csproj", "{DD76CCEB-19DA-418B-BA37-37845FE5C12D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AgfLangUnitTest", "AgfLangTest\AgfLangUnitTest.csproj", "{DD76CCEB-19DA-418B-BA37-37845FE5C12D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
